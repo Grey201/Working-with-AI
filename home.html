@@ -5,7 +5,11 @@
 </head>
 <body>
     <div style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
-        <div style="display: flex; justify-content: center; width: 400px;"><input type="text" id="newTodoInput"><button onclick="addTodo()">Add Todo</button></div>
+        <div style="display: flex; justify-content: center; width: 400px;">
+            <input type="text" id="newTodoInput">
+            <button onclick="addTodo()">Add Todo</button>
+
+        </div>
         </div>
         <div id="todoList" style="margin-top: 10px; border: 1px solid #ccc; padding: 10px;"></div>
     </div>
@@ -29,6 +33,7 @@
 
     <div id="todoList"></div>
 <script>
+    
     function addTodo() {
         const newTodoInput = document.getElementById('newTodoInput');
         const newTodo = newTodoInput.value;
@@ -48,6 +53,24 @@
             console.error(error);
         });
     }
+    /**
+     * Deletes a todo item from the server.
+     * 
+     * @param {string} todoId - The ID of the todo item to delete.
+     * @returns {void}
+     */
+    function deleteTodoItem(todoId) {
+        fetch(`/todos/${todoId}`, {
+            method: 'DELETE'
+        })
+        .then(() => {
+            renderTodoItems();
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    }
+
     function renderTodoItems() {
         fetch('/todos')
             .then(response => response.json())
@@ -92,6 +115,12 @@
                     }
                     
                     todoList.appendChild(todoItem);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'delete-button';
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.addEventListener('click', () => deleteTodoItem(todo.id));
+                    todoItem.appendChild(deleteButton);
                     
                     const splitter = document.createElement('hr');
                     todoList.appendChild(splitter); // Add a horizontal line as a splitter between todo items

@@ -4,7 +4,7 @@ const fs = require('fs');
 jest.mock('fs');
 
 // Import the function to be tested
-const { addTodoItem, clearTodoItems } = require('./functions');
+const { addTodoItem, deleteTodoItem } = require('./functions');
 
 describe('addTodoItem', () => {
   it('should add a todo item to the storage file', () => {
@@ -30,21 +30,19 @@ describe('addTodoItem', () => {
     expect(fs.readFile).toHaveBeenCalledWith('./storage.json', 'utf8', expect.any(Function));
     expect(fs.writeFile).toHaveBeenCalledWith('./storage.json', JSON.stringify(newData), 'utf8', expect.any(Function));
   });
-});describe('clearTodoItems', () => {
-  it('should clear the todo items in the storage file', () => {
-    // Mock the data to be written to the storage file
-    const newData = '[]';
-    fs.writeFile.mockImplementation((path, data, encoding, callback) => {
-      expect(path).toBe('./storage.json');
-      expect(data).toBe(newData);
-      expect(encoding).toBe('utf8');
-      callback(null);
-    });
+});
+describe('deleteTodoItem', () => {
+  it('should delete a todo item from the server and render updated todo items', () => {
+    // Mock the fetch function
+    global.fetch = jest.fn().mockImplementation(() => Promise.resolve());
+
+    // Mock the renderTodoItems function
+    
 
     // Call the function to be tested
-    clearTodoItems();
+    deleteTodoItem(1);
 
-    // Verify that the fs module function was called as expected
-    expect(fs.writeFile).toHaveBeenCalledWith('./storage.json', newData, 'utf8', expect.any(Function));
+    // Verify that the fetch function was called with the correct arguments
+    expect(fetch).toHaveBeenCalledWith('/todos/1', { method: 'DELETE' });
   });
 });

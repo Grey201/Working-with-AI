@@ -42,6 +42,20 @@ function clearTodoItems() {
     });
 }
 
+
+app.delete('/todos/:id', (req, res) => {
+    const { id } = req.params;
+    const todos = readTodos();
+    const todoIndex = todos.findIndex(todo => todo.id === id);
+    if (todoIndex === -1) {
+        res.status(404).send('Todo not found');
+        return;
+    }
+    todos.splice(todoIndex, 1);
+    saveTodos(todos);
+    res.send('Todo deleted');
+});
+
 app.post('/todos', (req, res) => {
     const { title } = req.body;
     const todos = readTodos();
